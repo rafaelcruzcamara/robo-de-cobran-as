@@ -7,23 +7,30 @@ name = "robo-de-cobrancas"
 version = "0.1.0"
 description = "Lembretes de cobrança respeitosos para pequenas empresas"
 requires-python = ">=3.12"
-dependencies = []
+dependencies = [
+    "Django>=5.2,<6.0",
+    "openpyxl>=3.1,<4",
+    "gunicorn>=23.0,<24",
+    "whitenoise>=6.9,<7",
+]
 
 [project.optional-dependencies]
 dev = [
     "pytest>=8.0",
     "ruff>=0.9",
 ]
+postgres = ["psycopg[binary]>=3.2,<4"]
 
 [tool.setuptools.packages.find]
-where = ["src"]
+where = ["back/src"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+pythonpath = ["back"]
 
 [tool.ruff]
 line-length = 88
-src = ["src"]
+src = ["back/src"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I"]

@@ -1,0 +1,12 @@
+{% extends "cobrancas/base.html" %}
+{% block title %}{{ titulo }} · Robô de cobrança{% endblock %}
+{% block content %}
+  <section class="panel narrow">
+    <h1>{{ titulo }}</h1>
+    <form method="post">
+      {% csrf_token %}{{ form.non_field_errors }}
+      {% for field in form %}<label for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}{{ field.errors }}{% endfor %}
+      <div class="actions"><button type="submit">Salvar</button><a href="{% url voltar %}">Cancelar</a></div>
+    </form>
+  </section>
+{% endblock %}

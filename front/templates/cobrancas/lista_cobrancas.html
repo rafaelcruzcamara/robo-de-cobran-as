@@ -1,0 +1,18 @@
+{% extends "cobrancas/base.html" %}
+{% load cobrancas_tags %}
+{% block title %}Cobranças · Robô de cobrança{% endblock %}
+{% block content %}
+  <div class="page-heading"><div><h1>Cobranças</h1><p>Consulte e acompanhe os pagamentos.</p></div><a class="button" href="{% url 'criar_cobranca' %}">Nova cobrança</a></div>
+  <section class="panel">
+    <form class="search" method="get"><label for="id_q">Buscar por cliente ou descrição</label><input id="id_q" name="q" value="{{ busca }}"><button type="submit">Buscar</button></form>
+    {% if pagina.object_list %}<div class="table-wrap"><table>
+      <thead><tr><th>Vencimento</th><th>Cliente</th><th>Descrição</th><th>Valor</th><th>Situação</th></tr></thead>
+      <tbody>{% for cobranca in pagina %}<tr>
+        <td>{{ cobranca.vencimento|date:"d/m/Y" }}</td><td>{{ cobranca.cliente.nome }}</td>
+        <td><a href="{% url 'detalhe_cobranca' cobranca.pk %}">{{ cobranca.descricao }}</a></td>
+        <td>R$ {{ cobranca.valor|brl }}</td><td><span class="badge {% if cobranca.paga %}badge--paid{% else %}badge--open{% endif %}">{% if cobranca.paga %}Paga{% else %}Em aberto{% endif %}</span></td>
+      </tr>{% endfor %}</tbody>
+    </table></div>{% else %}<p class="empty">Nenhuma cobrança encontrada.</p>{% endif %}
+    {% include "cobrancas/paginacao.html" with pagina=pagina %}
+  </section>
+{% endblock %}

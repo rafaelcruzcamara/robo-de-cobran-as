@@ -1,0 +1,16 @@
+{% extends "cobrancas/base.html" %}
+{% load cobrancas_tags %}
+{% block title %}{{ cliente.nome }} · Robô de cobrança{% endblock %}
+{% block content %}
+  <div class="page-heading"><div><h1>{{ cliente.nome }}</h1><p>{{ cliente.email }} · {% if cliente.pausado %}Pausado{% else %}Ativo{% endif %}</p></div></div>
+  <section class="panel">
+    <div class="section-heading"><h2>Cobranças</h2>
+      <form method="post" action="{% url 'alternar_pausa' cliente.pk %}">{% csrf_token %}
+        <button class="secondary" type="submit">{% if cliente.pausado %}Retomar cliente{% else %}Pausar cliente{% endif %}</button>
+      </form>
+    </div>
+    {% if cobrancas %}<div class="table-wrap"><table><thead><tr><th>Vencimento</th><th>Descrição</th><th>Valor</th><th>Situação</th></tr></thead><tbody>
+      {% for cobranca in cobrancas %}<tr><td>{{ cobranca.vencimento|date:"d/m/Y" }}</td><td><a href="{% url 'detalhe_cobranca' cobranca.pk %}">{{ cobranca.descricao }}</a></td><td>R$ {{ cobranca.valor|brl }}</td><td>{% if cobranca.paga %}{% if cobranca.baixada_em %}Paga em {{ cobranca.baixada_em|date:"d/m/Y" }}{% else %}Paga (data não informada){% endif %}{% else %}Em aberto{% endif %}</td></tr>{% endfor %}
+    </tbody></table></div>{% else %}<p class="empty">Este cliente ainda não possui cobranças.</p>{% endif %}
+  </section>
+{% endblock %}

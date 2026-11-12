@@ -1,0 +1,16 @@
+{% extends "cobrancas/base.html" %}
+{% load cobrancas_tags %}
+{% block title %}{{ cobranca.descricao }} · Robô de cobrança{% endblock %}
+{% block content %}
+  <section class="panel narrow">
+    <h1>{{ cobranca.descricao }}</h1>
+    <dl class="details"><dt>Cliente</dt><dd><a href="{% url 'detalhe_cliente' cobranca.cliente_id %}">{{ cobranca.cliente.nome }}</a></dd>
+      <dt>Valor</dt><dd>R$ {{ cobranca.valor|brl }}</dd><dt>Vencimento</dt><dd>{{ cobranca.vencimento|date:"d/m/Y" }}</dd>
+      <dt>Situação</dt><dd>{% if cobranca.paga %}{% if cobranca.baixada_em %}Paga em {{ cobranca.baixada_em|date:"d/m/Y" }}{% else %}Paga (data não informada){% endif %}{% else %}Em aberto{% endif %}</dd>
+    </dl>
+    {% if not cobranca.paga %}<a class="button" href="{% url 'baixar_cobranca' cobranca.pk %}">Registrar pagamento</a>{% endif %}
+  </section>
+  <section class="panel"><h2>Histórico de etapas</h2>
+    {% if historico %}<ul class="history">{% for etapa in historico %}<li>{{ etapa.data_execucao|date:"d/m/Y" }} · {{ etapa.descricao_etapa }} · {{ etapa.get_estado_display }}</li>{% endfor %}</ul>{% else %}<p class="empty">Nenhuma etapa registrada.</p>{% endif %}
+  </section>
+{% endblock %}

@@ -1,0 +1,55 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: cobrancas_ci
+          POSTGRES_USER: cobrancas_ci
+          POSTGRES_PASSWORD: ci-only-password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U cobrancas_ci -d cobrancas_ci"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      DJANGO_DEBUG: "true"
+      DJANGO_ALLOWED_HOSTS: localhost,127.0.0.1
+      COBRANCAS_DB_ENGINE: postgresql
+      COBRANCAS_DB_NAME: cobrancas_ci
+      COBRANCAS_DB_USER: cobrancas_ci
+      COBRANCAS_DB_PASSWORD: ci-only-password
+      COBRANCAS_DB_HOST: 127.0.0.1
+      COBRANCAS_DB_PORT: "5432"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install dependencies
+        run: python -m pip install -e ".[dev,postgres]"
+      - name: Django checks
+        run: python back/manage.py check
+      - name: Check migrations
+        run: python back/manage.py makemigrations --check --dry-run
+      - name: Apply migrations on PostgreSQL
+        run: python back/manage.py migrate --noinput
+      - name: Tests
+        run: python -m pytest
+      - name: Ruff
+        run: |
+          ruff check .
+          ruff format --check .

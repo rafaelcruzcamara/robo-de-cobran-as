@@ -1,0 +1,23 @@
+{% extends "cobrancas/base.html" %}
+{% load cobrancas_tags %}
+{% block title %}Painel · Robô de cobrança{% endblock %}
+{% block content %}
+  <div class="page-heading"><div><h1>Painel</h1><p>Resumo de {{ hoje|date:"d/m/Y" }}</p></div></div>
+  <section class="cards">
+    <article class="panel metric"><span>Em aberto</span><strong>R$ {{ total_em_aberto|brl }}</strong></article>
+    <article class="panel metric"><span>Vencido</span><strong>R$ {{ total_vencido|brl }}</strong></article>
+  </section>
+  <section class="panel">
+    <div class="section-heading"><h2>Etapas recentes</h2><a href="{% url 'lista_cobrancas' %}">Ver cobranças</a></div>
+    {% if etapas_recentes %}
+      <div class="table-wrap"><table>
+        <thead><tr><th>Data</th><th>Cliente</th><th>Cobrança</th><th>Etapa</th><th>Estado</th></tr></thead>
+        <tbody>{% for etapa in etapas_recentes %}
+          <tr><td>{{ etapa.data_execucao|date:"d/m/Y" }}</td><td>{{ etapa.cobranca.cliente.nome }}</td>
+          <td><a href="{% url 'detalhe_cobranca' etapa.cobranca_id %}">{{ etapa.cobranca.descricao }}</a></td>
+          <td>{{ etapa.descricao_etapa }}</td><td>{{ etapa.get_estado_display }}</td></tr>
+        {% endfor %}</tbody>
+      </table></div>
+    {% else %}<p class="empty">Ainda não há etapas registradas.</p>{% endif %}
+  </section>
+{% endblock %}

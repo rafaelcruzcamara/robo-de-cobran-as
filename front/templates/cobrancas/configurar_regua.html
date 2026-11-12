@@ -1,0 +1,21 @@
+{% extends "cobrancas/base.html" %}
+{% block title %}Régua de cobrança{% endblock %}
+{% block content %}
+  <section class="panel narrow">
+    <p class="eyebrow">Configuração global</p>
+    <h1>Régua de cobrança</h1>
+    <p>Defina os intervalos em dias corridos. O lembrete na data do vencimento permanece fixo.</p>
+    <form method="post">
+      {% csrf_token %}
+      {% for field in form %}
+        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+        {{ field }}
+        {% if field.name == "dias_antes" %}<small>Dias antes do vencimento (1 a 365).</small>{% endif %}
+        {% if field.name == "dias_depois" %}<small>Dias após o vencimento (1 a 365).</small>{% endif %}
+        {{ field.errors }}
+      {% endfor %}
+      <button type="submit">Salvar régua</button>
+    </form>
+    <p class="help">Mudanças afetam futuras execuções. O histórico de etapas já registradas é preservado.</p>
+  </section>
+{% endblock %}

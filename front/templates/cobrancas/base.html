@@ -1,0 +1,31 @@
+{% load static %}
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Robô de cobrança{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'cobrancas/app.css' %}">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="{% url 'dashboard' %}">Robô de cobrança</a>
+    {% if user.is_authenticated %}
+      <nav aria-label="Navegação principal">
+        <a class="{% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" href="{% url 'dashboard' %}" {% if request.resolver_match.url_name == 'dashboard' %}aria-current="page"{% endif %}>Painel</a>
+        <a class="{% if request.resolver_match.url_name == 'lista_clientes' or request.resolver_match.url_name == 'criar_cliente' or request.resolver_match.url_name == 'detalhe_cliente' %}active{% endif %}" href="{% url 'lista_clientes' %}" {% if request.resolver_match.url_name == 'lista_clientes' or request.resolver_match.url_name == 'criar_cliente' or request.resolver_match.url_name == 'detalhe_cliente' %}aria-current="page"{% endif %}>Clientes</a>
+        <a class="{% if request.resolver_match.url_name == 'lista_cobrancas' or request.resolver_match.url_name == 'criar_cobranca' or request.resolver_match.url_name == 'detalhe_cobranca' or request.resolver_match.url_name == 'baixar_cobranca' %}active{% endif %}" href="{% url 'lista_cobrancas' %}" {% if request.resolver_match.url_name == 'lista_cobrancas' or request.resolver_match.url_name == 'criar_cobranca' or request.resolver_match.url_name == 'detalhe_cobranca' or request.resolver_match.url_name == 'baixar_cobranca' %}aria-current="page"{% endif %}>Cobranças</a>
+        <a class="{% if request.resolver_match.url_name == 'importar_cobrancas' %}active{% endif %}" href="{% url 'importar_cobrancas' %}" {% if request.resolver_match.url_name == 'importar_cobrancas' %}aria-current="page"{% endif %}>Importar</a>
+        <a class="{% if request.resolver_match.url_name == 'configurar_regua' %}active{% endif %}" href="{% url 'configurar_regua' %}" {% if request.resolver_match.url_name == 'configurar_regua' %}aria-current="page"{% endif %}>Régua</a>
+      </nav>
+      <form method="post" action="{% url 'logout' %}">
+        {% csrf_token %}<button class="link-button" type="submit">Sair</button>
+      </form>
+    {% endif %}
+  </header>
+  <main class="container">
+    {% for message in messages %}<div class="notice">{{ message }}</div>{% endfor %}
+    {% block content %}{% endblock %}
+  </main>
+</body>
+</html>

@@ -1,0 +1,15 @@
+{% extends "cobrancas/base.html" %}
+{% block title %}Clientes · Robô de cobrança{% endblock %}
+{% block content %}
+  <div class="page-heading"><div><h1>Clientes</h1><p>Contatos cadastrados para as cobranças.</p></div><a class="button" href="{% url 'criar_cliente' %}">Novo cliente</a></div>
+  <section class="panel">
+    {% if pagina.object_list %}<div class="table-wrap"><table>
+      <thead><tr><th>Nome</th><th>E-mail</th><th>Situação</th></tr></thead>
+      <tbody>{% for cliente in pagina %}<tr>
+        <td><a href="{% url 'detalhe_cliente' cliente.pk %}">{{ cliente.nome }}</a></td><td>{{ cliente.email }}</td>
+        <td><span class="badge {% if cliente.pausado %}badge--paused{% else %}badge--active{% endif %}">{% if cliente.pausado %}Pausado{% else %}Ativo{% endif %}</span></td>
+      </tr>{% endfor %}</tbody>
+    </table></div>{% else %}<p class="empty">Nenhum cliente cadastrado.</p>{% endif %}
+    {% include "cobrancas/paginacao.html" with pagina=pagina %}
+  </section>
+{% endblock %}

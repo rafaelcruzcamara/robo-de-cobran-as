@@ -1,0 +1,148 @@
+services:
+  - type: web
+    name: robo-de-cobrancas
+    runtime: python
+    plan: 0.5c-512mb
+    buildCommand: python -m pip install -e ".[postgres]" && python back/manage.py collectstatic --noinput
+    preDeployCommand: python back/manage.py migrate --noinput
+    startCommand: gunicorn --chdir back config.wsgi:application --bind 0.0.0.0:$PORT
+    autoDeployTrigger: 'off'
+    healthCheckPath: /accounts/login/
+    envVars:
+      - key: DJANGO_DEBUG
+        value: "false"
+      - key: DJANGO_SECRET_KEY
+        generateValue: true
+      - key: DJANGO_ALLOWED_HOSTS
+        value: robo-de-cobrancas.onrender.com
+      - key: DJANGO_CSRF_TRUSTED_ORIGINS
+        value: https://robo-de-cobrancas.onrender.com
+      - key: DJANGO_TRUST_PROXY_SSL_HEADER
+        value: "true"
+      - key: COBRANCAS_DB_ENGINE
+        value: postgresql
+      - key: COBRANCAS_DB_NAME
+        fromDatabase:
+          name: robo-de-cobrancas-db
+          property: database
+      - key: COBRANCAS_DB_USER
+        fromDatabase:
+          name: robo-de-cobrancas-db
+          property: user
+      - key: COBRANCAS_DB_PASSWORD
+        fromDatabase:
+          name: robo-de-cobrancas-db
+          property: password
+      - key: COBRANCAS_DB_HOST
+        fromDatabase:
+          name: robo-de-cobrancas-db
+          property: host
+      - key: COBRANCAS_DB_PORT
+        fromDatabase:
+          name: robo-de-cobrancas-db
+          property: port
+      - key: COBRANCAS_DB_SSLMODE
+        value: require
+      - key: COBRANCAS_AGENDAMENTO_ENVIAR
+        value: "false"
+      - key: COBRANCAS_EMAIL_BACKEND
+        value: console
+      - key: COBRANCAS_EMAIL_HOST
+        sync: false
+      - key: COBRANCAS_EMAIL_PORT
+        value: "587"
+      - key: COBRANCAS_EMAIL_USE_TLS
+        value: "true"
+      - key: COBRANCAS_EMAIL_FROM
+        sync: false
+      - key: COBRANCAS_EMAIL_USER
+        sync: false
+      - key: COBRANCAS_EMAIL_PASSWORD
+        sync: false
+      - key: COBRANCAS_EMAIL_DESTINATARIOS_TESTE
+        sync: false
+  - type: cron
+    name: robo-de-cobrancas-diario
+    runtime: python
+    schedule: "0 12 * * 1-5"
+    buildCommand: python -m pip install -e ".[postgres]"
+    startCommand: python back/manage.py processar_cobrancas_agendado
+    autoDeployTrigger: 'off'
+    envVars:
+      - key: DJANGO_DEBUG
+        value: "false"
+      - key: DJANGO_SECRET_KEY
+        fromService:
+          name: robo-de-cobrancas
+          type: web
+          envVarKey: DJANGO_SECRET_KEY
+      - key: COBRANCAS_DB_ENGINE
+        value: postgresql
+      - key: COBRANCAS_DB_NAME
+        fromDatabase:
+          name: robo-de-cobrancas-db
+          property: database
+      - key: COBRANCAS_DB_USER
+        fromDatabase:
+          name: robo-de-cobrancas-db
+          property: user
+      - key: COBRANCAS_DB_PASSWORD
+        fromDatabase:
+          name: robo-de-cobrancas-db
+          property: password
+      - key: COBRANCAS_DB_HOST
+        fromDatabase:
+          name: robo-de-cobrancas-db
+          property: host
+      - key: COBRANCAS_DB_PORT
+        fromDatabase:
+          name: robo-de-cobrancas-db
+          property: port
+      - key: COBRANCAS_DB_SSLMODE
+        value: require
+      - key: COBRANCAS_AGENDAMENTO_ENVIAR
+        value: "false"
+      - key: COBRANCAS_EMAIL_HOST
+        fromService:
+          name: robo-de-cobrancas
+          type: web
+          envVarKey: COBRANCAS_EMAIL_HOST
+      - key: COBRANCAS_EMAIL_PORT
+        fromService:
+          name: robo-de-cobrancas
+          type: web
+          envVarKey: COBRANCAS_EMAIL_PORT
+      - key: COBRANCAS_EMAIL_USE_TLS
+        fromService:
+          name: robo-de-cobrancas
+          type: web
+          envVarKey: COBRANCAS_EMAIL_USE_TLS
+      - key: COBRANCAS_EMAIL_USER
+        fromService:
+          name: robo-de-cobrancas
+          type: web
+          envVarKey: COBRANCAS_EMAIL_USER
+      - key: COBRANCAS_EMAIL_PASSWORD
+        fromService:
+          name: robo-de-cobrancas
+          type: web
+          envVarKey: COBRANCAS_EMAIL_PASSWORD
+      - key: COBRANCAS_EMAIL_FROM
+        fromService:
+          name: robo-de-cobrancas
+          type: web
+          envVarKey: COBRANCAS_EMAIL_FROM
+      - key: COBRANCAS_EMAIL_DESTINATARIOS_TESTE
+        fromService:
+          name: robo-de-cobrancas
+          type: web
+          envVarKey: COBRANCAS_EMAIL_DESTINATARIOS_TESTE
+      - key: COBRANCAS_EMAIL_BACKEND
+        fromService:
+          name: robo-de-cobrancas
+          type: web
+          envVarKey: COBRANCAS_EMAIL_BACKEND
+databases:
+  - name: robo-de-cobrancas-db
+    plan: 0.1c-256mb
+    databaseName: cobrancas

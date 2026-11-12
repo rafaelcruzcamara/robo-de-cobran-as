@@ -1,0 +1,32 @@
+{% extends "cobrancas/base.html" %}
+{% load cobrancas_tags %}
+{% block title %}Importar cobranças · Robô de cobrança{% endblock %}
+{% block content %}
+  <section class="panel narrow">
+    <h1>Importar cobranças</h1>
+    <p>Envie CSV UTF-8 com separador ; ou arquivo XLSX (máximo 5 MB). A prévia não grava dados.</p>
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}<label for="id_arquivo">Arquivo CSV ou XLSX</label>
+      <input id="id_arquivo" type="file" name="arquivo" accept=".csv,.xlsx" required>
+      {% if token_confirmacao %}
+        <input type="hidden" name="confirmar" value="1">
+        <input type="hidden" name="token_confirmacao" value="{{ token_confirmacao }}">
+        <p>Selecione novamente o mesmo arquivo para confirmar a importação revisada.</p>
+        <button type="submit">Confirmar importação</button>
+      {% else %}<button type="submit">Revisar arquivo</button>{% endif %}
+    </form>
+  </section>
+  {% if resultado or erros_extras %}
+    <section class="panel">
+      <h2>Resultado da revisão</h2>
+      {% if resultado.erros %}<ul class="errors">{% for erro in resultado.erros %}<li>Linha {{ erro.linha }}, {{ erro.campo }}: {{ erro.mensagem }}</li>{% endfor %}</ul>{% endif %}
+      {% if erros_extras %}<ul class="errors">{% for linha, mensagem in erros_extras %}<li>{% if linha %}Linha {{ linha }}: {% endif %}{{ mensagem }}</li>{% endfor %}</ul>{% endif %}
+      {% if resultado.cobrancas and not resultado.erros and not erros_extras %}
+        <p>{{ resultado.cobrancas|length }} cobranças válidas. Nenhuma foi gravada ainda.</p>
+        <div class="table-wrap"><table><thead><tr><th>Cliente</th><th>Descrição</th><th>Valor</th><th>Vencimento</th></tr></thead><tbody>
+          {% for cobranca in resultado.cobrancas %}<tr><td>{{ cobranca.cliente }}</td><td>{{ cobranca.descricao }}</td><td>R$ {{ cobranca.valor|brl }}</td><td>{{ cobranca.vencimento|date:"d/m/Y" }}</td></tr>{% endfor %}
+        </tbody></table></div>
+      {% endif %}
+    </section>
+  {% endif %}
+{% endblock %}

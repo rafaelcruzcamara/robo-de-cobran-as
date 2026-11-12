@@ -1,0 +1,16 @@
+{% extends "cobrancas/base.html" %}
+{% block title %}Entrar · Robô de cobrança{% endblock %}
+{% block content %}
+  <section class="panel narrow">
+    <h1>Entrar</h1>
+    <p>Acesse sua conta para consultar e atualizar cobranças.</p>
+    <form method="post">
+      {% csrf_token %}
+      {{ form.non_field_errors }}
+      <label for="id_username">Usuário</label>{{ form.username }}{{ form.username.errors }}
+      <label for="id_password">Senha</label>{{ form.password }}{{ form.password.errors }}
+      <input type="hidden" name="next" value="{{ next }}">
+      <button type="submit">Entrar</button>
+    </form>
+  </section>
+{% endblock %}
