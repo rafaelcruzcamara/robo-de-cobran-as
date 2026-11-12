@@ -15,7 +15,7 @@ Pequenas empresas podem perder tempo conferindo planilhas e escrevendo cobrança
 
 ## Estado atual
 
-O núcleo do MVP está implementado. A régua permite configurar intervalos, o front é responsivo, e o projeto possui configuração PostgreSQL/Render e CI. A configuração hospedada ainda não foi publicada nem validada em uma conta Render; o job agendado simula por padrão e o envio real continua desativado.
+O núcleo do MVP está implementado e separado em `front/` e `back/`. O código foi enviado ao GitHub, mas não há hospedagem paga nem deploy. A opção escolhida para tentar entrega sem custo é uma conta Gmail pessoal usada localmente; ainda faltam o endereço remetente e a configuração da senha de app. O envio permanece desativado e o site de demonstração usa banco temporário isolado.
 
 ## Desenvolvimento
 

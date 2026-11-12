@@ -2,6 +2,16 @@
 
 O arquivo `render.yaml` prepara uma implantação na Render com PostgreSQL, Gunicorn, WhiteNoise e job de cron. Não sincronize o Blueprint antes de revisar custos, nome/domínio, região, backups e limites dos planos no painel.
 
+## Estado atual e ponto de retomada
+
+- O usuário escolheu **Gmail pessoal** para experimentar envio sem contratar um serviço. O uso será local neste computador; a aplicação ainda não foi publicada e nenhum recurso pago foi provisionado.
+- Ainda não temos o endereço Gmail remetente. A conta precisa ter verificação em duas etapas para permitir uma senha de app; o Google informa que essa opção não é recomendada em geral e pode estar indisponível em contas gerenciadas ou com certas proteções. Consulte [Senhas de app do Google](https://support.google.com/accounts/answer/185833?hl=pt-BR).
+- Nenhuma senha de app foi criada ou configurada. Não a envie no chat nem a coloque no repositório; ela deve ser configurada somente como variável local protegida.
+- A aplicação continua no padrão seguro: backend `console`, allowlist vazia e `COBRANCAS_AGENDAMENTO_ENVIAR=false`. Nenhum e-mail real foi enviado.
+- O servidor local de demonstração usa um SQLite temporário, isolado do banco existente, e não tem cobranças de clientes. Para o primeiro teste, cadastrar uma cobrança fictícia para o próprio endereço e executar o comando manualmente; não habilitar cron nem incluir clientes.
+
+**Próxima ação:** informar apenas o endereço remetente Gmail (não a senha), confirmar que a verificação em duas etapas está ativa e criar uma senha de app na página oficial do Google. Depois configurar SMTP localmente e fazer um envio manual para o próprio endereço com allowlist restrita. Sem domínio próprio e sem hospedagem, o app continuará acessível apenas neste computador.
+
 ## PostgreSQL
 
 Instale `python -m pip install -e ".[postgres]"` e configure estas variáveis no serviço (não em arquivos versionados):
